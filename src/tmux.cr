@@ -69,6 +69,8 @@ class Tmux
     property window_id : String
     property pane_width : Int32
     property pane_height : Int32
+    property pane_top : Int32
+    property pane_left : Int32
     property pane_current_path : String
     property pane_in_mode : Bool
     property scroll_position : Int32 | Nil
@@ -91,6 +93,8 @@ class Tmux
     window_id:         String,
     pane_width:        Int32,
     pane_height:       Int32,
+    pane_left:         Int32,
+    pane_top:          Int32,
     pane_current_path: String,
     pane_in_mode:      Bool,
     scroll_position: Int32 | Nil,
