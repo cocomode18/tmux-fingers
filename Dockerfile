@@ -1,6 +1,6 @@
 FROM crystallang/crystal:1.19-alpine
 ENV LANG=en_US.UTF-8
-RUN apk upgrade && apk add bash libevent-dev ncurses-dev ncurses hyperfine bison
+RUN apk upgrade && apk add bash libevent-dev ncurses-dev ncurses hyperfine bison automake autoconf
 COPY ./spec/install-tmux-versions.sh /opt/install-tmux-versions.sh
 COPY ./spec/use-tmux.sh /opt/use-tmux.sh
 RUN bash /opt/install-tmux-versions.sh

@@ -4,7 +4,7 @@ set -e
 if [[ -n "$CI_TMUX_VERSION" ]]; then
   VERSIONS=("$CI_TMUX_VERSION")
 else
-  VERSIONS=("3.0a" "3.1c" "3.2a" "3.3a" "3.4" "3.5a" "3.6a")
+  VERSIONS=("3.0a" "3.1c" "3.2a" "3.3a" "3.4" "3.5a" "3.6a" "3.7-rc" "master")
 fi
 
 mkdir -p /opt
@@ -16,10 +16,11 @@ pushd /tmp
       continue
     fi
 
-    wget "https://github.com/tmux/tmux/releases/download/${version}/tmux-${version}.tar.gz"
-    tar pfx "tmux-${version}.tar.gz" -C "/opt/"
+    echo "Downloading tmux version ${version}"
+    git clone --depth 1 --branch "${version}" https://github.com/tmux/tmux /opt/tmux-${version}
 
     pushd "/opt/tmux-${version}"
+      sh autogen.sh
       ./configure
       make
       chmod -R a+r /opt/tmux-${version}
