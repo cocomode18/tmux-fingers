@@ -172,24 +172,8 @@ module Fingers::Commands
     end
 
     private def show_hints
-      # It is very important to resize the window at this point to match the
-      # dimensions of the target pane. Otherwise weird linejumping will occur
-      # when we have wrapped lines.
-      tmux.resize_window(
-        fingers_window.window_id,
-        target_pane.pane_width,
-        target_pane.pane_height,
-      ) if needs_resize?
-
-      # Swapping panes with -Z flag causes some issues with rendering panes
-      # with tabs or double width characters
-      if target_pane.window_zoomed_flag
-        tmux.swap_panes(fingers_window.pane_id, target_pane.pane_id)
-        view.render
-      else
-        view.render
-        tmux.swap_panes(fingers_window.pane_id, target_pane.pane_id)
-      end
+      fingers_pane
+      view.render
     end
 
     private def handle_input
@@ -241,7 +225,6 @@ module Fingers::Commands
     end
 
     private def teardown
-      tmux.swap_panes(fingers_pane_id, target_pane.pane_id)
       tmux.kill_pane(fingers_pane_id)
 
       restore_last_pane
@@ -261,16 +244,16 @@ module Fingers::Commands
       @mode.not_nil!
     end
 
-    private getter fingers_window : Tmux::Window do
-      tmux.create_window("[fingers]", "cat", 80, 24)
+    private getter fingers_pane : Tmux::Pane do
+      tmux.new_pane(target_pane.pane_left, target_pane.pane_top, target_pane.pane_width, target_pane.pane_height, "cat")
     end
 
     private getter fingers_pane_id : String do
-      fingers_window.pane_id
+      fingers_pane.pane_id
     end
 
     private getter pane_printer : PanePrinter do
-      PanePrinter.new(fingers_window.pane_tty)
+      PanePrinter.new(fingers_pane.pane_tty)
     end
 
     private getter state : Fingers::State do

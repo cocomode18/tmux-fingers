@@ -4,8 +4,12 @@ set -e
 if [[ -n "$CI_TMUX_VERSION" ]]; then
   VERSIONS=("$CI_TMUX_VERSION")
 else
-  VERSIONS=("3.0a" "3.1c" "3.2a" "3.3a" "3.4" "3.5a" "3.6a" "3.7-rc" "master")
+  #VERSIONS=("3.0a" "3.1c" "3.2a" "3.3a" "3.4" "3.5a" "3.6a" "master")
+  VERSIONS=("float-border-offset")
 fi
+
+# clone as bare repo
+git clone --bare https://github.com/daneofmanythings/tmux /opt/tmux-repo
 
 mkdir -p /opt
 
@@ -16,10 +20,12 @@ pushd /tmp
       continue
     fi
 
-    echo "Downloading tmux version ${version}"
-    git clone --depth 1 --branch "${version}" https://github.com/tmux/tmux /opt/tmux-${version}
+    echo "Building tmux version ${version}"
+
+    git clone /opt/tmux-repo /opt/tmux-${version}
 
     pushd "/opt/tmux-${version}"
+      git checkout "${version}"
       sh autogen.sh
       ./configure
       make

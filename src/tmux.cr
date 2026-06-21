@@ -67,6 +67,7 @@ class Tmux
 
     property pane_id : String
     property window_id : String
+    property pane_tty : String
     property pane_width : Int32
     property pane_height : Int32
     property pane_top : Int32
@@ -91,6 +92,7 @@ class Tmux
   PANE_FORMAT = build_tmux_format({
     pane_id:           String,
     window_id:         String,
+    pane_tty:          String,
     pane_width:        Int32,
     pane_height:       Int32,
     pane_left:         Int32,
@@ -155,6 +157,14 @@ class Tmux
     exec(Process.quote(args)).chomp.split("\n").map do |pane|
       Pane.from_json(pane)
     end
+  end
+
+  def new_pane(x, y, width, height, cmd) : Pane
+    args = ["new-pane", "-B", "none", "-X", x.to_s, "-Y", y.to_s, "-x", width.to_s, "-y", height.to_s, "-F", PANE_FORMAT, "-P", cmd]
+
+    output = exec(Process.quote(args))
+
+    Pane.from_json(output)
   end
 
   def find_pane_by_id(id) : Pane | Nil
