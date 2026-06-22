@@ -22,7 +22,15 @@ popd &> /dev/null
 SKIP_WIZARD=$(tmux show-option -gqv @fingers-skip-wizard)
 SKIP_WIZARD=${SKIP_WIZARD:-0}
 
-if [ "$SKIP_WIZARD" = "0" ] && [ "$CURRENT_FINGERS_VERSION" != "$CURRENT_GIT_VERSION" ]; then
+function version_gt() {
+  [ "$1" != "$2" ] && \
+    [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -n1)" = "$1" ]
+}
+
+# We only show wizard when git version is newer than the binary. If binary has
+# been updated by other means that is fine, since git repo is only needed for
+# updates through tpm.
+if [ "$SKIP_WIZARD" = "0" ] && version_gt "$CURRENT_GIT_VERSION" "$CURRENT_FINGERS_VERSION"; then
   tmux run-shell -b "FINGERS_UPDATE=1 bash $CURRENT_DIR/install-wizard.sh"
 
   if [[ "$?" != "0" ]]; then
