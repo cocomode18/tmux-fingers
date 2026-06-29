@@ -96,7 +96,7 @@ module Fingers
     # the previous `(bytesize - size) / 3` heuristic was tuned for 4-byte emoji
     # and under-counted 3-byte CJK characters, which over-padded the line, pushed
     # it past the pane width, and made every CJK line wrap — leaving a blank row
-    # under it (see https://github.com/Morantron/tmux-fingers double-width report).
+    # beneath it in the overlay.
     def double_width_correction_for(line)
       line.each_char.count { |char| wide_char?(char) }
     end
